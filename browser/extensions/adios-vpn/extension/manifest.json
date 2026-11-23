@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "AdiOS VPN",
   "description": "VPN integrada: lleva el tráfico de AdiOS por la VPN de Firefox o por tu proveedor (Proton VPN, NordVPN...).",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "hidden": true,
   "browser_specific_settings": {
     "gecko": {

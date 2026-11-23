@@ -159,6 +159,17 @@ set_config(
     depends_if("ACCEPTED_MAR_CHANNEL_IDS")(lambda channels: ",".join(channels)),
 )
 
+option(
+    env="MOZ_APPUPDATE_HOST",
+    nargs=1,
+    help="Host (and optional path) of the application update server",
+)
+
+set_config(
+    "MOZ_APPUPDATE_HOST",
+    depends_if("MOZ_APPUPDATE_HOST")(lambda host: host[0]),
+)
+
 # Use NSS for MAR signatures even on platforms where system libraries are
 # supported (currently Windows and macOS).
 # ==============================================================

@@ -6,9 +6,10 @@
 
 Usage: python install_wireproxy.py <dir containing firefox.exe>
 
-AdiOS VPN runs <install dir>/adios-vpn/wireproxy.exe for WireGuard
-connections. The release is pinned and checked against its SHA-256 before
-use; downloads are cached in ~/.mozbuild/adios-vpn.
+AdiOS VPN runs <install dir>/distribution/wireproxy.exe for WireGuard
+connections; files in distribution/ are included in the packages, the
+installer and the updates. The release is pinned and checked against its
+SHA-256 before use; downloads are cached in ~/.mozbuild/adios-vpn.
 """
 
 import hashlib
@@ -46,7 +47,7 @@ def cached_wireproxy():
 
 
 def main(install_dir):
-    target = Path(install_dir) / "adios-vpn" / "wireproxy.exe"
+    target = Path(install_dir) / "distribution" / "wireproxy.exe"
     target.parent.mkdir(exist_ok=True)
     shutil.copy2(cached_wireproxy(), target)
     print(f"wireproxy {VERSION} instalado en {target}")

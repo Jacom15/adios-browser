@@ -4,3 +4,11 @@ ac_add_options --enable-optimize
 ac_add_options --disable-debug
 ac_add_options --enable-release
 ac_add_options --with-branding=browser/branding/adios
+
+# Actualizaciones: canal propio, paquetes firmados con las claves de AdiOS
+# (browser/branding/adios/mar-*.der) y servidor en GitHub Pages. El "?" hace
+# que la ruta que añade Firefox sea una consulta y se sirva siempre update.xml.
+ac_add_options --enable-update-channel=adios
+ac_add_options MAR_CHANNEL_ID=adios
+ac_add_options ACCEPTED_MAR_CHANNEL_IDS=adios
+ac_add_options "MOZ_APPUPDATE_HOST=jacom15.github.io/adios-browser/update.xml?"

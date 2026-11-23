@@ -61,7 +61,7 @@ let savedPrefs = null;
 
 function wireproxyPath() {
   let file = Services.dirsvc.get("GreBinD", Ci.nsIFile);
-  file.append("adios-vpn");
+  file.append("distribution");
   file.append("wireproxy.exe");
   return file;
 }

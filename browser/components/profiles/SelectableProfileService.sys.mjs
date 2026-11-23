@@ -500,6 +500,33 @@ class SelectableProfileServiceClass extends EventEmitter {
     }
   }
 
+  /**
+   * Gives every profile but the first one of the group its own Windows taskbar
+   * button, instead of the whole group sharing the install's button.
+   *
+   * @param {Window} win
+   */
+  async #setTaskbarGroup(win) {
+    if (
+      !("nsIWinTaskbar" in Ci) ||
+      lazy.PrivateBrowsingUtils.isWindowPrivate(win)
+    ) {
+      return;
+    }
+    let profiles = await this.getAllProfiles();
+    let firstId = Math.min(...profiles.map(profile => profile.id));
+    if (this.#currentProfile.id == firstId) {
+      return;
+    }
+    let taskbar = Cc["@mozilla.org/windows-taskbar;1"].getService(
+      Ci.nsIWinTaskbar
+    );
+    taskbar.setGroupIdForWindow(
+      win,
+      `${taskbar.defaultGroupId}.profile${this.#currentProfile.id}`
+    );
+  }
+
   async #attemptFlushProfileService() {
     try {
       await this.#profileService.asyncFlushCurrentProfile();
@@ -787,6 +814,7 @@ class SelectableProfileServiceClass extends EventEmitter {
       this.#everyWindowCallbackId,
       window => {
         this.#setOverlayIcon({ win: window });
+        this.#setTaskbarGroup(window).catch(console.error);
 
         // Update the window title because the currentProfile, needed in the
         // .*-with-profile titles, didn't exist when the title was initially set.

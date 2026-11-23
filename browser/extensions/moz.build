@@ -10,6 +10,7 @@ DIRS += [
     "search-detection",
     "newtab",
     "ublock",
+    "adios-vpn",
 ]
 
 JAR_MANIFESTS += ["jar.mn"]

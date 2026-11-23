@@ -1,0 +1,336 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+body {
+  width: 330px;
+  padding: 0;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+h1 {
+  font-size: 17px;
+  margin: 0;
+}
+
+h2 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+
+p {
+  margin: 0;
+}
+
+/* Header with the big switch. */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin: -16px -16px 0;
+  background: linear-gradient(135deg, #1b2259, #3a1f7a);
+  color: #fff;
+}
+
+.hero img {
+  width: 34px;
+  height: 34px;
+}
+
+.hero div {
+  flex: 1;
+}
+
+.state {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.connected .hero {
+  background: linear-gradient(135deg, #0c6b5d, #1e8a6e);
+}
+
+.switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.switch span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.switch[aria-checked="true"] {
+  background: #2ee59d;
+}
+
+.switch[aria-checked="true"] span {
+  transform: translateX(22px);
+}
+
+.switch.busy span {
+  opacity: 0.5;
+}
+
+/* Provider list. */
+#providers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.provider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: var(--card);
+  cursor: pointer;
+}
+
+.provider.selected {
+  border-color: var(--accent);
+}
+
+.provider.disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.avatar {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #fff;
+}
+
+.avatar.firefox { background: linear-gradient(135deg, #ff9500, #ff3750); }
+.avatar.proton { background: linear-gradient(135deg, #6d4aff, #4a2fd1); }
+.avatar.nord { background: linear-gradient(135deg, #4687ff, #1b54d3); }
+.avatar.other { background: linear-gradient(135deg, #7a7a8c, #4f4f63); }
+
+.provider .text {
+  flex: 1;
+  min-width: 0;
+}
+
+.provider .name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.provider .detail {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.provider .action {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.provider .remove {
+  padding: 2px 6px;
+  background: transparent;
+  color: var(--muted);
+  visibility: hidden;
+}
+
+.provider:hover .remove {
+  visibility: visible;
+}
+
+/* Buttons that look like links. */
+.link {
+  background: transparent;
+  padding: 4px 0;
+  color: var(--accent);
+  text-align: start;
+}
+
+.wide {
+  width: 100%;
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+
+/* Add view. */
+.sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sub .link {
+  font-size: 18px;
+  padding: 0 4px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.tabs button {
+  flex: 1;
+  padding: 6px;
+  background: transparent;
+  font-size: 13px;
+}
+
+.tabs button[aria-selected="true"] {
+  background: var(--bg);
+  font-weight: 600;
+}
+
+[data-panel],
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.steps {
+  margin: 0;
+  padding-inline-start: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.note {
+  text-align: center;
+}
+
+details summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+#add-message.ok {
+  color: var(--ok);
+}
+
+#add-message.error {
+  font-size: 13px;
+}
+
+/* Country picker inside a provider row. */
+.provider select.country {
+  margin-top: 4px;
+  width: auto;
+  max-width: 100%;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 6px;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.banner {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  font-size: 13px;
+}
+
+/* Sites without VPN. */
+.site {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.site .text {
+  flex: 1;
+  min-width: 0;
+}
+
+.site .name {
+  font-weight: 600;
+}
+
+.site .detail {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.site .action {
+  padding: 5px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chips li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 12px;
+}
+
+.chips button {
+  padding: 0 6px;
+  background: transparent;
+  color: var(--muted);
+}

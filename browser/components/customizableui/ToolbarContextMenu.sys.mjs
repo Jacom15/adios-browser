@@ -486,16 +486,20 @@ export var ToolbarContextMenu = {
     let separator = reportExtension.nextElementSibling;
     let id = this._getExtensionId(popup);
     let addon = id && (await lazy.AddonManager.getAddonByID(id));
+    // A hidden add-on with a toolbar button is part of the browser itself
+    // (e.g. AdiOS VPN): don't offer to manage, remove, report or unpin it
+    // like a regular extension.
+    let showAddonItems = addon && !addon.hidden;
 
     for (let element of [removeExtension, manageExtension, separator]) {
-      element.hidden = !addon;
+      element.hidden = !showAddonItems;
     }
 
     if (pinToToolbar) {
-      pinToToolbar.hidden = !addon;
+      pinToToolbar.hidden = !showAddonItems;
     }
 
-    reportExtension.hidden = !addon || !lazy.gAddonAbuseReportEnabled;
+    reportExtension.hidden = !showAddonItems || !lazy.gAddonAbuseReportEnabled;
 
     if (addon) {
       popup.querySelector(".customize-context-moveToPanel").hidden = true;

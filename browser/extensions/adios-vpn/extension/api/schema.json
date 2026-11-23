@@ -1,0 +1,109 @@
+[
+  {
+    "namespace": "adiosVpn",
+    "functions": [
+      {
+        "name": "isWireGuardAvailable",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "startWireGuard",
+        "type": "function",
+        "async": true,
+        "parameters": [{ "name": "config", "type": "string" }]
+      },
+      {
+        "name": "stopWireGuard",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "setLeakProtection",
+        "type": "function",
+        "async": true,
+        "parameters": [{ "name": "enabled", "type": "boolean" }]
+      },
+      {
+        "name": "saveSecret",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "id", "type": "string" },
+          { "name": "secret", "type": "string" }
+        ]
+      },
+      {
+        "name": "loadSecret",
+        "type": "function",
+        "async": true,
+        "parameters": [{ "name": "id", "type": "string" }]
+      },
+      {
+        "name": "deleteSecret",
+        "type": "function",
+        "async": true,
+        "parameters": [{ "name": "id", "type": "string" }]
+      },
+      {
+        "name": "migrateSecrets",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "readWireGuardFile",
+        "type": "function",
+        "async": true,
+        "parameters": [{ "name": "path", "type": "string" }]
+      },
+      {
+        "name": "baseDomain",
+        "type": "function",
+        "async": true,
+        "parameters": [{ "name": "host", "type": "string" }]
+      },
+      {
+        "name": "setFirefoxVpnExclusion",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "domain", "type": "string" },
+          { "name": "excluded", "type": "boolean" }
+        ]
+      },
+      {
+        "name": "hideFirefoxVpnButton",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "firefoxVpnStatus",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "firefoxVpnSignIn",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "firefoxVpnStart",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "firefoxVpnStop",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      }
+    ]
+  }
+]

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+   - You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <!-- Main view: on/off switch and provider list. -->
+    <section id="main-view">
+      <header class="hero">
+        <img id="hero-icon" src="../icons/vpn-off.svg" alt="" />
+        <div>
+          <h1>VPN</h1>
+          <p id="state" class="state">Desconectada</p>
+        </div>
+        <button id="switch" class="switch" role="switch" aria-checked="false" aria-label="VPN">
+          <span></span>
+        </button>
+      </header>
+
+      <p id="error" class="error" hidden></p>
+      <p id="importing" class="banner" hidden>
+        Esperando archivos .conf… Descárgalos y aparecerán aquí solos.
+      </p>
+
+      <h2>Proveedor</h2>
+      <ul id="providers"></ul>
+      <button id="add" class="link">＋ Añadir Proton VPN, NordVPN u otro</button>
+
+      <h2>Webs sin VPN</h2>
+      <div id="site" class="site" hidden>
+        <div class="text">
+          <div id="site-domain" class="name"></div>
+          <div id="site-state" class="detail"></div>
+        </div>
+        <button id="site-toggle" class="action"></button>
+      </div>
+      <ul id="exclusions" class="chips"></ul>
+      <p id="no-exclusions" class="muted">
+        Para webs que bloquean las VPN, como DAZN: van por tu conexión normal.
+      </p>
+
+      <footer>
+        <span id="ip" class="muted">¿Por dónde sales a internet?</span>
+        <button id="check-ip" class="link">Comprobar</button>
+      </footer>
+    </section>
+
+    <!-- Add view: one simple step per provider. -->
+    <section id="add-view" hidden>
+      <header class="sub">
+        <button id="back" class="link" aria-label="Volver">←</button>
+        <h1>Añadir proveedor</h1>
+      </header>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" data-tab="proton" aria-selected="true">Proton VPN</button>
+        <button role="tab" data-tab="nord">NordVPN</button>
+        <button role="tab" data-tab="other">Otro</button>
+      </div>
+
+      <div data-panel="proton">
+        <ol class="steps">
+          <li>Pulsa <b>Abrir Proton</b> e inicia sesión.</li>
+          <li>En <b>WireGuard</b> elige «Windows», un país y pulsa <b>Crear</b> y <b>Descargar</b>.</li>
+          <li>¡Listo! AdiOS lo detecta y lo añade solo.</li>
+        </ol>
+        <button class="primary wide" data-import="proton">Abrir Proton</button>
+        <p class="muted note">El archivo se guarda cifrado en AdiOS y se borra de Descargas.</p>
+      </div>
+
+      <form id="nord-form" data-panel="nord" hidden>
+        <p class="muted">
+          Usa tus <b>credenciales de servicio</b> de Nord (no tu correo):
+          <a href="https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/" target="_blank">dónde encontrarlas</a>.
+        </p>
+        <input name="username" placeholder="Usuario de servicio" autocomplete="off" required />
+        <input name="password" type="password" placeholder="Contraseña de servicio" autocomplete="off" required />
+        <select name="server">
+          <option value="nl">Países Bajos</option>
+          <option value="se">Suecia</option>
+          <option value="us">Estados Unidos</option>
+        </select>
+        <button class="primary wide">Guardar</button>
+      </form>
+
+      <div data-panel="other" hidden>
+        <p class="muted">
+          Si tu proveedor da archivos <b>WireGuard (.conf)</b> (Mullvad, IVPN,
+          Surfshark…), pulsa el botón y descárgalo desde su web: AdiOS lo
+          detecta solo.
+        </p>
+        <button class="primary wide" data-import="wireguard">Esperar archivo .conf</button>
+        <details>
+          <summary>Servidor con usuario y contraseña</summary>
+          <form id="proxy-form">
+            <select name="kind">
+              <option value="socks">SOCKS5</option>
+              <option value="https">HTTPS</option>
+            </select>
+            <input name="host" placeholder="Servidor" required />
+            <input name="port" type="number" min="1" max="65535" placeholder="Puerto" required />
+            <input name="username" placeholder="Usuario" autocomplete="off" required />
+            <input name="password" type="password" placeholder="Contraseña" autocomplete="off" required />
+            <input name="name" placeholder="Nombre (opcional)" />
+            <button class="primary wide">Guardar</button>
+          </form>
+        </details>
+      </div>
+
+      <p id="add-message" hidden></p>
+    </section>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

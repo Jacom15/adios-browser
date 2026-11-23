@@ -175,6 +175,9 @@ const { EventEmitter, redefineGetter, updateAllowedOrigins } = ExtensionCommon;
 const { sharedData } = Services.ppmm;
 
 const PRIVATE_ALLOWED_PERMISSION = "internal:privateBrowsingAllowed";
+// Hidden built-in add-ons that are still allowed to show a toolbar button
+// (AdiOS VPN, see browser/extensions/adios-vpn).
+const HIDDEN_ADDONS_WITH_ACTIONS = new Set(["vpn@adios.browser"]);
 const SVG_CONTEXT_PROPERTIES_PERMISSION =
   "internal:svgContextPropertiesAllowed";
 
@@ -1945,7 +1948,8 @@ export class ExtensionData {
     if (
       this.isPrivileged &&
       manifest.hidden &&
-      (manifest.action || manifest.browser_action || manifest.page_action)
+      (manifest.action || manifest.browser_action || manifest.page_action) &&
+      !HIDDEN_ADDONS_WITH_ACTIONS.has(this.id)
     ) {
       this.manifestError(
         "Cannot use browser and/or page actions in hidden add-ons"

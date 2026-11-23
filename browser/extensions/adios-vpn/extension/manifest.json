@@ -1,0 +1,46 @@
+{
+  "manifest_version": 2,
+  "name": "AdiOS VPN",
+  "description": "VPN integrada: lleva el tráfico de AdiOS por la VPN de Firefox o por tu proveedor (Proton VPN, NordVPN...).",
+  "version": "1.4.0",
+  "hidden": true,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "vpn@adios.browser"
+    }
+  },
+  "permissions": [
+    "proxy",
+    "storage",
+    "downloads",
+    "notifications",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_icon": "icons/vpn-off.svg",
+    "default_title": "VPN desconectada",
+    "default_popup": "ui/popup.html",
+    "default_area": "navbar"
+  },
+  "experiment_apis": {
+    "adiosVpn": {
+      "schema": "api/schema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "script": "api/parent.js",
+        "paths": [
+          [
+            "adiosVpn"
+          ]
+        ]
+      }
+    }
+  }
+}

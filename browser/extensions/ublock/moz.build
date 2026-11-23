@@ -1,0 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# uBlock Origin, bundled as a hidden built-in add-on. The extension/ directory
+# is vendored by update_ublock.py; don't edit it by hand.
+JAR_MANIFESTS += ["jar.mn"]

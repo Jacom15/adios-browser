@@ -115,13 +115,27 @@
   .steps p { color: var(--soft); font-size: 15px; }
   .steps .tip { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255, 210, 122, .1); border: 1px solid rgba(255, 210, 122, .28); color: #f3e6c8; font-size: 14px; }
   kbd { font: inherit; font-weight: 600; white-space: nowrap; }
+  .steps .tip a { color: inherit; }
+  .intro { color: var(--soft); max-width: 70ch; margin: -6px 0 18px; }
+  .smartscreen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .smartscreen figure { margin: 0; display: grid; gap: 10px; }
+  .smartscreen figcaption { color: var(--soft); font-size: 15px; }
+  .ss { position: relative; padding: 22px 22px 18px; border-radius: 10px; background: #1366b8; color: #fff; font-family: "Segoe UI", system-ui, sans-serif; box-shadow: 0 16px 40px rgba(0, 0, 0, .35); }
+  .ss-title { font-size: 25px; font-weight: 300; margin-bottom: 12px; }
+  .ss p { font-size: 13.5px; line-height: 1.45; margin-bottom: 12px; }
+  .ss-app { font-size: 13.5px; }
+  .ss-link { display: inline-block; font-size: 13.5px; text-decoration: underline; }
+  .ss-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .25); }
+  .ss-btn { padding: 6px 14px; border: 2px solid rgba(255, 255, 255, .85); font-size: 13.5px; white-space: nowrap; }
+  .mark { position: relative; outline: 3px solid var(--warn); outline-offset: 4px; border-radius: 3px; }
+  .mark::after { content: attr(data-n); position: absolute; top: -16px; right: -16px; width: 24px; height: 24px; border-radius: 50%; background: var(--warn); color: #2c1563; font: 800 13px system-ui, sans-serif; display: grid; place-items: center; }
 
   footer { margin-top: 28px; padding-block: 26px 36px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   footer a { color: var(--soft); }
 
   @media (max-width: 820px) {
     .hero { grid-template-columns: 1fr; gap: 36px; padding-block: 16px 36px; }
-    .features, .steps { grid-template-columns: 1fr; }
+    .features, .steps, .smartscreen { grid-template-columns: 1fr; }
   }
   @media (max-width: 480px) {
     .src { display: none; }
@@ -192,11 +206,38 @@
     <section>
       <h2>Instalarlo</h2>
       <ol class="steps">
-        <li><h3>Descárgalo</h3><p>Pulsa «Descargar para Windows» y guarda AdiOS-Setup.exe.</p></li>
-        <li><h3>Ábrelo</h3><p>Sigue el instalador; tarda menos de un minuto.</p>
-          <p class="tip">Si Windows avisa de una aplicación no reconocida (no está firmada por Microsoft), pulsa <kbd>Más información</kbd> y luego <kbd>Ejecutar de todas formas</kbd>.</p></li>
+        <li><h3>Descárgalo</h3><p>Pulsa «Descargar para Windows» y guarda AdiOS-Setup.exe.</p>
+          <p class="tip">Si el navegador dice que el archivo no se descarga habitualmente, elige <kbd>Conservar</kbd> o <kbd>Permitir descarga</kbd>.</p></li>
+        <li><h3>Ábrelo</h3><p>Haz doble clic en AdiOS-Setup.exe y sigue el instalador; tarda menos de un minuto.</p>
+          <p class="tip">Si sale un aviso azul de Windows, mira <a href="#aviso">aquí abajo</a> cómo seguir.</p></li>
         <li><h3>Listo</h3><p>A partir de aquí se mantiene al día solo: no hace falta volver a esta página.</p></li>
       </ol>
+    </section>
+
+    <section id="aviso">
+      <h2>Si Windows te avisa</h2>
+      <p class="intro">Es normal: AdiOS es nuevo y su instalador no está firmado por Microsoft, así que Windows no lo
+        reconoce todavía. Solo pasa al instalar; las actualizaciones no vuelven a avisar.</p>
+      <div class="smartscreen">
+        <figure>
+          <div class="ss" aria-hidden="true">
+            <div class="ss-title">Windows protegió su PC</div>
+            <p>Microsoft Defender SmartScreen impidió el inicio de una aplicación no reconocida. Ejecutar esta aplicación puede poner en riesgo su PC.</p>
+            <span class="ss-link mark" data-n="1">Más información</span>
+            <div class="ss-buttons"><span class="ss-btn">No ejecutar</span></div>
+          </div>
+          <figcaption><b>1.</b> Pulsa <kbd>Más información</kbd>.</figcaption>
+        </figure>
+        <figure>
+          <div class="ss" aria-hidden="true">
+            <div class="ss-title">Windows protegió su PC</div>
+            <p>Microsoft Defender SmartScreen impidió el inicio de una aplicación no reconocida. Ejecutar esta aplicación puede poner en riesgo su PC.</p>
+            <p class="ss-app">Aplicación: AdiOS-Setup.exe<br>Editor: Editor desconocido</p>
+            <div class="ss-buttons"><span class="ss-btn mark" data-n="2">Ejecutar de todas formas</span><span class="ss-btn">No ejecutar</span></div>
+          </div>
+          <figcaption><b>2.</b> Comprueba que pone <b>AdiOS-Setup.exe</b> y pulsa <kbd>Ejecutar de todas formas</kbd>.</figcaption>
+        </figure>
+      </div>
     </section>
   </main>
 

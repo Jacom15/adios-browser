@@ -27,6 +27,7 @@ KEYS_DIR = Path.home() / ".adios-firma"
 TOPSRCDIR = Path(__file__).resolve().parents[3]
 OBJDIR = TOPSRCDIR / "obj-x86_64-pc-windows-msvc"
 DIST = OBJDIR / "dist"
+WEB = TOPSRCDIR / "browser" / "branding" / "adios" / "web"
 GH = shutil.which("gh") or r"C:\Program Files\GitHub CLI\gh.exe"
 
 
@@ -89,62 +90,37 @@ def update_xml(version, build_id, mar, mar_url):
 """
 
 
-def index_html(version, setup_url, setup_size):
-    megabytes = round(setup_size / 1_000_000)
-    return f"""<!doctype html>
-<html lang="es">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AdiOS Browser</title>
-<meta name="description" content="Firefox sin anuncios y con VPN integrada. Se actualiza solo.">
-<link rel="icon" type="image/png" href="buho.png">
-<style>
-  * {{ box-sizing: border-box; }}
-  body {{ margin: 0; min-height: 100vh; font: 16px/1.55 "Segoe UI", system-ui, sans-serif;
-         color: #fbfbfe; background: radial-gradient(circle at 20% 10%, #2a2f8f 0, transparent 45%),
-         linear-gradient(135deg, #0d1440, #2c1563) fixed; }}
-  main {{ max-width: 640px; margin: 0 auto; padding: 56px 16px 40px; }}
-  header {{ text-align: center; }}
-  header img {{ width: 112px; height: 112px; }}
-  h1 {{ font-size: clamp(34px, 8vw, 48px); line-height: 1.1; margin: 14px 0 8px; letter-spacing: -.02em; }}
-  .tag {{ font-size: 19px; color: #d9d6ff; margin: 0; }}
-  .download {{ display: inline-block; margin: 28px 0 8px; padding: 15px 30px; border-radius: 12px;
-              background: #8f7bff; color: #fff; font-weight: 600; font-size: 18px; text-decoration: none; }}
-  .download:hover {{ background: #a191ff; }}
-  .meta {{ color: #bfbaf0; font-size: 14px; margin: 0; }}
-  ul {{ list-style: none; padding: 0; margin: 40px 0 0; display: grid; gap: 12px; }}
-  li {{ padding: 14px 16px; border-radius: 12px; background: rgba(255, 255, 255, .07);
-       border: 1px solid rgba(255, 255, 255, .12); }}
-  li b {{ display: block; }}
-  li span {{ color: #d0cdf2; font-size: 15px; }}
-  .note {{ margin-top: 28px; padding: 14px 16px; border-radius: 12px; background: rgba(255, 210, 122, .1);
-          border: 1px solid rgba(255, 210, 122, .3); font-size: 15px; color: #f3e6c8; }}
-  footer {{ margin-top: 32px; text-align: center; font-size: 13px; color: #a9a4d6; }}
-  footer a {{ color: #c9bfff; }}
-</style>
-<main>
-  <header>
-    <img src="buho.png" alt="">
-    <h1>AdiOS Browser</h1>
-    <p class="tag">Firefox sin anuncios y con VPN integrada.</p>
-    <a class="download" href="{html.escape(setup_url)}">Descargar para Windows</a>
-    <p class="meta">Versión {html.escape(version)} · {megabytes} MB · Windows 10 y 11 (64 bits)</p>
-  </header>
-  <ul>
-    <li><b>Sin anuncios</b><span>El bloqueador viene dentro del navegador: no hay extensiones que instalar ni configurar.</span></li>
-    <li><b>VPN a elegir</b><span>La VPN gratuita de Firefox o la tuya: Proton VPN, NordVPN o cualquier WireGuard.
-      Con webs que puedes dejar fuera de la VPN.</span></li>
-    <li><b>Se actualiza solo</b><span>Cuando hay versión nueva aparece en el menú ☰; un clic y listo.</span></li>
-    <li><b>Es Firefox por dentro</b><span>Las extensiones de Firefox funcionan igual, y con tu cuenta de Firefox
-      te traes los marcadores y las contraseñas.</span></li>
-  </ul>
-  <p class="note">Al abrir el instalador, Windows puede avisar de que es una aplicación no reconocida porque
-    no está firmada por Microsoft. Pulsa «Más información» y luego «Ejecutar de todas formas».</p>
-  <footer><a href="https://github.com/{REPO}">Código fuente</a> · MPL 2.0 (uBlock Origin, GPLv3) ·
-    basado en Mozilla Firefox; no es un producto de Mozilla.</footer>
-</main>
-</html>
-"""
+def index_html(version=None, setup_url=None, setup_size=None):
+    """The download page; without a version it says the first one is on its way."""
+    if version:
+        download = (
+            f'<a class="download" href="{html.escape(setup_url)}">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
+            'stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/>'
+            '<path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>Descargar para Windows</a>'
+        )
+        meta = (
+            f"Versión {html.escape(version)} · {round(setup_size / 1_000_000)} MB · "
+            "Windows 10 y 11 (64 bits)"
+        )
+    else:
+        download = '<span class="download soon">Disponible muy pronto</span>'
+        meta = "Primera versión en preparación · Windows 10 y 11 (64 bits)"
+    page = (WEB / "index.html").read_text(encoding="utf-8")
+    return (
+        page.replace("@DOWNLOAD@", download)
+        .replace("@META@", meta)
+        .replace("@PAGES_URL@", PAGES_URL)
+    )
+
+
+def site_files(page):
+    return {
+        "index.html": page,
+        "buho.png": (TOPSRCDIR / "browser" / "branding" / "adios" / "default256.png").read_bytes(),
+        "vista-previa.png": (WEB / "vista-previa.png").read_bytes(),
+        ".nojekyll": "",
+    }
 
 
 def publish_pages(files):
@@ -168,7 +144,11 @@ def publish_pages(files):
             "-f", "source[branch]=gh-pages", "-f", "source[path]=/")
 
 
-def main():
+def main(argv):
+    if argv == ["--provisional"]:
+        # Only the download page, before the first version is published.
+        publish_pages(site_files(index_html()))
+        return
     version, build_id = build_info()
     tag = f"v{version}-{build_id}"
     print(f"AdiOS {version} (compilación {build_id})")
@@ -191,13 +171,11 @@ def main():
 
     base = f"https://github.com/{REPO}/releases/download/{tag}"
     publish_pages({
+        **site_files(index_html(version, f"{base}/AdiOS-Setup.exe", setup.stat().st_size)),
         "update.xml": update_xml(version, build_id, mar, f"{base}/{mar.name}"),
-        "index.html": index_html(version, f"{base}/AdiOS-Setup.exe", setup.stat().st_size),
-        "buho.png": (TOPSRCDIR / "browser" / "branding" / "adios" / "default256.png").read_bytes(),
-        ".nojekyll": "",
     })
     print(f"\nPublicado: {PAGES_URL}  ({tag})")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

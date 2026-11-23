@@ -12,3 +12,7 @@ ac_add_options --enable-update-channel=adios
 ac_add_options MAR_CHANNEL_ID=adios
 ac_add_options ACCEPTED_MAR_CHANNEL_IDS=adios
 ac_add_options "MOZ_APPUPDATE_HOST=jacom15.github.io/adios-browser/update.xml?"
+# El servicio de mantenimiento solo acepta programas firmados por Mozilla y es
+# compartido con Firefox: AdiOS no lo instala (las instalaciones para todos los
+# usuarios piden permiso de Windows al actualizar).
+ac_add_options --disable-maintenance-service

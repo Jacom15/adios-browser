@@ -45,21 +45,24 @@ def build_info():
 def make_signed_mar(version, build_id, out_dir):
     unsigned = out_dir / "unsigned.mar"
     signed = out_dir / f"AdiOS-{version}-{build_id}.complete.mar"
+    # The script runs under bash, which would eat the backslashes of Windows paths.
     env = {
         **os.environ,
-        "MAR": str(DIST / "host" / "bin" / "mar.exe"),
+        "MAR": (DIST / "host" / "bin" / "mar.exe").as_posix(),
         "MOZ_PRODUCT_VERSION": version,
         "MAR_CHANNEL_ID": CHANNEL,
     }
     run(
         "bash",
-        TOPSRCDIR / "tools" / "update-packaging" / "make_full_update.sh",
+        (TOPSRCDIR / "tools" / "update-packaging" / "make_full_update.sh").as_posix(),
         "-q",
-        unsigned,
-        DIST / "firefox",
+        unsigned.as_posix(),
+        (DIST / "firefox").as_posix(),
         "firefox",
         env=env,
     )
+    if not unsigned.exists():
+        sys.exit("No se pudo crear el paquete de actualización.")
     keys = f"sql:{KEYS_DIR}"
     signmar = DIST / "bin" / "signmar.exe"
     run(signmar, "-d", keys, "-n", SIGNING_KEY, "-s", unsigned, signed, cwd=DIST / "bin")

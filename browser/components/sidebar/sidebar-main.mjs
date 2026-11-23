@@ -25,6 +25,12 @@ ChromeUtils.defineESModuleGetters(lazy, {
   GenAI: "moz-src:///browser/components/genai/GenAI.sys.mjs",
 });
 
+const { XPCOMUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/XPCOMUtils.sys.mjs"
+);
+
+const VISIBLE_TOOLS_PREF = "adios.sidebar.visibleTools";
+
 /**
  * Sidebar with expanded and collapsed states that provides entry points
  * to various sidebar panels and sidebar extensions.
@@ -81,6 +87,13 @@ export default class SidebarMain extends MozLitElement {
     };
     this.shouldShowOverflowButton = false;
     this.overflowMenuOpen = false;
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "visibleToolsPref",
+      VISIBLE_TOOLS_PREF,
+      "",
+      () => this.requestUpdate()
+    );
   }
 
   tooltips = {
@@ -541,7 +554,40 @@ export default class SidebarMain extends MozLitElement {
     return window.SidebarController.toolsAndExtensions;
   }
 
+  /**
+   * The views kept in the launcher when adios.sidebar.visibleTools is set; every
+   * other tool is collapsed into the overflow menu. Null when nothing collapses.
+   */
+  get #visibleTools() {
+    if (
+      !this.visibleToolsPref ||
+      !window.SidebarController.sidebarVerticalTabsEnabled ||
+      window.SidebarController.sidebarRevampVisibility === "expand-on-hover"
+    ) {
+      return null;
+    }
+    return new Set(this.visibleToolsPref.split(",").map(view => view.trim()));
+  }
+
+  #collapsedActions() {
+    let visible = this.#visibleTools;
+    if (!visible) {
+      return [];
+    }
+    return this.#allLauncherActions().filter(
+      action => !visible.has(action.view) && !action.disabled && !action.hidden
+    );
+  }
+
   getLauncherActions() {
+    let visible = this.#visibleTools;
+    let actions = this.#allLauncherActions();
+    return visible
+      ? actions.filter(action => visible.has(action.view))
+      : actions;
+  }
+
+  #allLauncherActions() {
     const actions = [...this.getToolsAndExtensions().values()];
     if (!window.SidebarController.sidebarVerticalTabsEnabled) {
       return actions;
@@ -874,6 +920,16 @@ export default class SidebarMain extends MozLitElement {
 
   showOverflowMenu(e) {
     let panel = document.getElementById("sidebar-tools-overflow");
+    let collapsed = this.#collapsedActions();
+    if (collapsed.length) {
+      document
+        .getElementById("tools-overflow-list")
+        .replaceChildren(
+          ...collapsed
+            .map(action => this.createCopyButton(action.view))
+            .filter(Boolean)
+        );
+    }
     this.resetPanelButtonValues();
     let isKeyboardEvent = e.detail == 0;
     panel.addEventListener(
@@ -922,6 +978,8 @@ export default class SidebarMain extends MozLitElement {
     let moreToolsTooltip = attributes?.find(
       attr => attr.name === "label"
     )?.value;
+    let showOverflowButton =
+      this.shouldShowOverflowButton || !!this.#collapsedActions().length;
     return html`
       <link
         rel="stylesheet"
@@ -941,10 +999,7 @@ export default class SidebarMain extends MozLitElement {
             window.SidebarController.sidebarVerticalTabsEnabled,
           () => html`${this.toolsSplitter}`
         )}
-        <div
-          class="buttons-wrapper"
-          ?overflowing=${this.shouldShowOverflowButton}
-        >
+        <div class="buttons-wrapper" ?overflowing=${showOverflowButton}>
           <button-group
             class="tools-and-extensions actions-list"
             orientation=${this.isToolsOverflowing() ? "horizontal" : "vertical"}
@@ -971,7 +1026,7 @@ export default class SidebarMain extends MozLitElement {
             class="tools-and-extensions actions-list overflow-button"
             orientation="vertical"
             part="overflow-button"
-            ?hidden=${!this.shouldShowOverflowButton}
+            ?hidden=${!showOverflowButton}
           >
             <moz-button
               class="more-tools-button"

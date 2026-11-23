@@ -50,7 +50,6 @@ def make_signed_mar(version, build_id, out_dir):
         "MAR": str(DIST / "host" / "bin" / "mar.exe"),
         "MOZ_PRODUCT_VERSION": version,
         "MAR_CHANNEL_ID": CHANNEL,
-        "XZ": str(Path.home() / ".mozbuild" / "xz" / "xz.exe"),
     }
     run(
         "bash",

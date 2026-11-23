@@ -61,7 +61,6 @@ python3 browser/extensions/ublock/verify_ublock.py
 
 paso "Empaquetando (inglés y español) y creando el instalador"
 ./mach package-multi-locale --locales en-US es-ES
-./mach build installer
 
 paso "Subiendo el código a GitHub"
 git push --force-with-lease adios HEAD:adios

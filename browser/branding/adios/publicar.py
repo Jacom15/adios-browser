@@ -4,7 +4,7 @@
 
 """Publish the packaged AdiOS build: signed update + installer + update.xml.
 
-Run by publicar.sh after `mach package-multi-locale` and `mach build installer`.
+Run by publicar.sh after `mach package-multi-locale`, which also builds the installer.
 The private signing keys live in ~/.adios-firma (never in the repository).
 """
 
@@ -151,9 +151,11 @@ def main(argv):
     version, build_id = build_info()
     tag = f"v{version}-{build_id}"
     print(f"AdiOS {version} (compilación {build_id})")
-    installers = sorted((DIST / "install" / "sea").glob("*.installer.exe"))
+    installers = sorted(DIST.glob(f"firefox-{version}.*.installer.exe"))
     if not installers:
-        sys.exit("No se encuentra el instalador; ejecuta antes `mach build installer`.")
+        sys.exit("No se encuentra el instalador; ejecuta antes `mach package-multi-locale`.")
+    if not (DIST / "firefox" / "distribution" / "wireproxy.exe").exists():
+        sys.exit("Falta distribution/wireproxy.exe en el paquete.")
 
     out_dir = DIST / "adios-release"
     shutil.rmtree(out_dir, ignore_errors=True)

@@ -8,7 +8,7 @@ pref("startup.homepage_override_url", "");
 pref("startup.homepage_welcome_url", "");
 pref("startup.homepage_welcome_url.additional", "");
 // The time interval between checks for a new version (in seconds)
-pref("app.update.interval", 86400); // 24 hours
+pref("app.update.interval", 7200); // AdiOS: every 2 hours, so new versions show up the same day
 // Give the user x seconds to react before showing the big UI. default=24 hours
 pref("app.update.promptWaitTime", 86400);
 // URL user can browse to manually if for some reason all update installation

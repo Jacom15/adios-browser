@@ -7,8 +7,9 @@
 # reciben desde el menú ☰ («Reiniciar para actualizar»).
 #
 # Uso (consola de MozillaBuild): browser/branding/adios/publicar.sh [--sin-descargar]
-#   --sin-descargar  publica el código actual sin traer antes la última versión
-#                    estable de Firefox ni de uBlock Origin.
+#   --sin-descargar  publica sin traer antes la última versión estable de
+#                    Firefox ni de uBlock Origin (los cambios de AdiOS en GitHub
+#                    sí se traen siempre).
 
 set -euo pipefail
 
@@ -27,11 +28,21 @@ if [ ! -f "$HOME/.adios-firma/key4.db" ]; then
   exit 1
 fi
 
+# Se combina con merge (sin reescribir la historia): la rama adios también
+# recibe cambios desde otros equipos.
+paso "Trayendo los cambios de AdiOS de GitHub"
+git fetch adios adios
+if ! git merge --no-edit adios/adios; then
+  git merge --abort
+  echo "Los cambios de GitHub chocan con los de este equipo: hay que resolverlo a mano."
+  exit 1
+fi
+
 if [ "${1:-}" != "--sin-descargar" ]; then
   paso "Trayendo la última versión estable de Firefox"
   git fetch origin release
-  if ! git rebase origin/release; then
-    git rebase --abort
+  if ! git merge --no-edit origin/release; then
+    git merge --abort
     echo "Los cambios de Mozilla chocan con los de AdiOS: hay que resolverlo a mano."
     exit 1
   fi
@@ -64,7 +75,7 @@ paso "Empaquetando (inglés y español) y creando el instalador"
 ./mach package-multi-locale --locales en-US es-ES
 
 paso "Subiendo el código a GitHub"
-git push --force-with-lease adios HEAD:adios
+git push adios HEAD:adios
 
 paso "Firmando y publicando la actualización"
 python3 browser/branding/adios/publicar.py

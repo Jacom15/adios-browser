@@ -42,3 +42,8 @@ pref("browser.ipProtection.added", true);
 // into its "more tools" menu. Empty restores the regular Firefox launcher.
 // "movil_adios_browser-sidebar-action" is the built-in Móvil panel.
 pref("adios.sidebar.visibleTools", "viewGenaiChatSidebar,movil_adios_browser-sidebar-action");
+
+// AdiOS: the sidebar expands with labels on hover and collapses on leave.
+pref("sidebar.visibility", "expand-on-hover");
+// AdiOS: unloaded (sleeping) tabs are shown greyed out.
+pref("browser.tabs.fadeOutUnloadedTabs", true);

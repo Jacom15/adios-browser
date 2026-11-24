@@ -13,7 +13,7 @@
 // Se cierra solo cuando AdiOS se cierra (su entrada estándar llega al final) y apaga adb,
 // para que las actualizaciones puedan sustituir los archivos de distribution/scrcpy/.
 //
-// Sin "--token" funciona como en el prototipo: puerto fijo 27184 y sin secreto.
+// Sin "--token" no arranca: no hay modo sin secreto.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,12 +22,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
 static class Puente
 {
-    const int PuertoPrototipo = 27184;
     const string VersionServidor = "5.0.1";
     internal static string adb;
     static string servidor, registro, secreto;
@@ -50,32 +50,27 @@ static class Puente
         adb = Path.Combine(carpeta, "scrcpy", "adb.exe");
         servidor = Path.Combine(carpeta, "scrcpy", "scrcpy-server");
         registro = Path.Combine(Path.GetTempPath(), "adios-movil-puente.log");
+        try
+        {
+            if (new FileInfo(registro).Length > 1 << 20) File.Delete(registro);
+        }
+        catch { }
         for (int i = 0; i + 1 < args.Length; i++)
         {
             if (args[i] == "--token") secreto = args[i + 1];
         }
+        if (string.IsNullOrEmpty(secreto) || secreto.Length < 16) return 1;
 
-        TcpListener escucha;
-        try
-        {
-            escucha = new TcpListener(IPAddress.Loopback, secreto != null ? 0 : PuertoPrototipo);
-            escucha.Start();
-        }
-        catch (SocketException)
-        {
-            return 0; // Prototipo: ya hay un puente en marcha.
-        }
+        TcpListener escucha = new TcpListener(IPAddress.Loopback, 0);
+        escucha.Start();
         int puerto = ((IPEndPoint)escucha.LocalEndpoint).Port;
-        Log("Puente en marcha en 127.0.0.1:" + puerto + (secreto != null ? " (lanzado por AdiOS)" : ""));
+        Log("Puente en marcha en 127.0.0.1:" + puerto);
 
-        if (secreto != null)
-        {
-            Console.Out.WriteLine("PUERTO " + puerto);
-            Console.Out.Flush();
-            Thread vigia = new Thread(VigilarAdiOS);
-            vigia.IsBackground = true;
-            vigia.Start();
-        }
+        Console.Out.WriteLine("PUERTO " + puerto);
+        Console.Out.Flush();
+        Thread vigia = new Thread(VigilarAdiOS);
+        vigia.IsBackground = true;
+        vigia.Start();
 
         while (true)
         {
@@ -115,7 +110,7 @@ static class Puente
             string clave, origen;
             cab.TryGetValue("sec-websocket-key", out clave);
             cab.TryGetValue("origin", out origen);
-            bool secretoOk = secreto == null || (peticion != null && peticion.StartsWith("GET /?t=" + secreto + " ", StringComparison.Ordinal));
+            bool secretoOk = peticion != null && peticion.StartsWith("GET /?t=" + secreto + " ", StringComparison.Ordinal);
             if (clave == null || origen == null || !origen.StartsWith("moz-extension://", StringComparison.Ordinal) || !secretoOk)
             {
                 byte[] no = Encoding.ASCII.GetBytes("HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
@@ -245,6 +240,12 @@ class Sesion
         {
             string[] partes = l.Trim().Split('\t');
             if (partes.Length < 2) continue;
+            // The serial goes into adb's command line: only accept plain ones.
+            if (!Regex.IsMatch(partes[0], "^[A-Za-z0-9._:-]+$"))
+            {
+                Puente.Log("Móvil ignorado: número de serie no válido");
+                continue;
+            }
             if (partes[1] == "device") return partes[0];
             if (partes[1] == "unauthorized") sinPermiso = true;
         }

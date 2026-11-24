@@ -149,8 +149,9 @@ PROBE_COSMETIC = """
   div.className = "ad_banner";
   div.textContent = "ad";
   document.body.append(div);
-  // Generic cosmetic filters can take a while right after a fresh install.
-  for (let i = 0; i < 60; i++) {
+  // Generic cosmetic filters can take a while right after a fresh install,
+  // and longer on the first run of a new uBlock Origin version.
+  for (let i = 0; i < 160; i++) {
     await new Promise(r => setTimeout(r, 250));
     if (getComputedStyle(div).display == "none") {
       return "hidden";

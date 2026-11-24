@@ -1,0 +1,66 @@
+:root {
+  color-scheme: light dark;
+  --fondo: #f4f4f8;
+  --texto: #1d1d2b;
+  --suave: #5c5f7a;
+  --boton: rgba(0, 0, 0, .06);
+  --boton-hover: rgba(0, 0, 0, .11);
+  --acento: #5b5fd6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #1c1b22;
+    --texto: #ececf3;
+    --suave: #a9abc4;
+    --boton: rgba(255, 255, 255, .08);
+    --boton-hover: rgba(255, 255, 255, .15);
+    --acento: #a5a8ff;
+  }
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--fondo);
+  color: var(--texto);
+  font: 13px/1.45 system-ui, "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+header { display: flex; align-items: center; gap: 8px; padding: 10px 12px 4px; font-weight: 600; }
+#punto { width: 8px; height: 8px; border-radius: 50%; background: #8a8aa0; flex: none; }
+body.conectado #punto { background: #3ddc84; }
+main { flex: 1; min-height: 0; display: grid; place-items: center; padding: 8px; }
+canvas {
+  display: block;
+  border-radius: 14px;
+  background: #000;
+  touch-action: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+}
+canvas:focus { outline: none; }
+canvas:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
+nav { display: flex; justify-content: center; gap: 14px; padding: 6px 0 12px; }
+nav button {
+  width: 46px; height: 34px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 10px;
+  background: var(--boton); color: var(--texto);
+  cursor: pointer;
+}
+nav button:hover { background: var(--boton-hover); }
+nav button svg { width: 16px; height: 16px; }
+#aviso { max-width: 300px; padding: 0 6px; }
+#aviso h1 { font-size: 15px; margin: 0 0 8px; text-wrap: balance; }
+#aviso p { color: var(--suave); margin: 6px 0; }
+#aviso ol { padding-left: 18px; margin: 8px 0; color: var(--suave); }
+#aviso li { margin: 4px 0; }
+#aviso b { color: var(--texto); }
+#reintentar {
+  margin-top: 10px; padding: 7px 14px;
+  border: 0; border-radius: 8px;
+  background: var(--acento); color: #11112a;
+  font: 600 13px system-ui, "Segoe UI", sans-serif;
+  cursor: pointer;
+}

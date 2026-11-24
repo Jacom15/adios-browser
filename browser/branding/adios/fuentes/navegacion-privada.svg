@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a0620"/><stop offset="1" stop-color="#3a1170"/></linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4c1d95"/></linearGradient>
+    <linearGradient id="head" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b3aa8"/><stop offset="1" stop-color="#2a1d72"/></linearGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#36257f"/><stop offset="1" stop-color="#1f1456"/></linearGradient>
+    <linearGradient id="beak" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#ff8a1c"/></linearGradient>
+    <radialGradient id="iris" cx=".45" cy=".4" r=".6"><stop offset="0" stop-color="#fff3a8"/><stop offset=".5" stop-color="#ffc233"/><stop offset="1" stop-color="#f07b12"/></radialGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".3"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="satin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d2076"/><stop offset=".55" stop-color="#1d0f3d"/><stop offset="1" stop-color="#0d0620"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbe7a1"/><stop offset=".5" stop-color="#e0b54a"/><stop offset="1" stop-color="#a87416"/></linearGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4c2b8f"/><stop offset="1" stop-color="#1d0f3d"/></linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+    <clipPath id="bodyclip"><path d="M128 88 C178 88 208 124 208 166 C208 206 174 230 128 230 C82 230 48 206 48 166 C48 124 78 88 128 88 Z"/></clipPath>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#06031a" flood-opacity=".45"/></filter>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <mask id="moon" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256"><rect width="256" height="256" fill="#ffffff"/><circle cx="208" cy="58" r="12" fill="#000000"/></mask>
+  </defs>
+  <circle cx="128" cy="128" r="118" fill="url(#bg)"/>
+  <circle cx="201" cy="65" r="14" fill="#ffe9a8" mask="url(#moon)"/>
+  <g fill="#ffffff" opacity=".7"><circle cx="46" cy="80" r="2.5"/><circle cx="34" cy="150" r="2"/><circle cx="224" cy="152" r="2"/></g>
+  <g filter="url(#soft)">
+    <path d="M128 88 C178 88 208 124 208 166 C208 206 174 230 128 230 C82 230 48 206 48 166 C48 124 78 88 128 88 Z" fill="url(#body)"/>
+    <g clip-path="url(#bodyclip)" fill="none" stroke="#ffffff" stroke-opacity=".4" stroke-width="5" stroke-linecap="round">
+      <ellipse cx="128" cy="170" rx="36" ry="70"/><path d="M44 172 Q128 190 212 172"/><path d="M56 206 Q128 220 200 206"/><path d="M128 100 V240"/>
+    </g>
+    <path d="M60 150 C40 172 42 208 72 224 C66 200 72 176 88 160 Z" fill="url(#wing)"/>
+    <path d="M196 150 C216 172 214 208 184 224 C190 200 184 176 168 160 Z" fill="url(#wing)"/>
+    <g fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"><path d="M62 182 q8 6 14 4"/><path d="M60 200 q8 6 16 4"/><path d="M194 182 q-8 6 -14 4"/><path d="M196 200 q-8 6 -16 4"/></g>
+    <g fill="url(#beak)"><path d="M100 222 q10 -8 20 0 q-4 8 -10 8 q-6 0 -10 -8 z"/><path d="M136 222 q10 -8 20 0 q-4 8 -10 8 q-6 0 -10 -8 z"/></g>
+    <path d="M60 112 C55 86 62 60 76 40 C89 56 101 64 111 68 C122 64 134 64 145 68 C155 64 167 56 180 40 C194 60 201 86 196 112 C191 142 164 158 128 158 C92 158 65 142 60 112 Z" fill="url(#head)"/>
+    <path d="M60 112 C55 86 62 60 76 40 C89 56 101 64 111 68 C122 64 134 64 145 68 C155 64 167 56 180 40 C194 60 201 86 196 112 C191 142 164 158 128 158 C92 158 65 142 60 112 Z" fill="url(#shine)"/>
+    <path d="M128 92 C116 76 90 74 78 90 C64 108 70 134 90 144 C104 151 119 146 128 136 C137 146 152 151 166 144 C186 134 192 108 178 90 C166 74 140 76 128 92 Z" fill="#dfe3ff"/>
+    <g filter="url(#glow)"><circle cx="102" cy="114" r="21" fill="url(#iris)"/><circle cx="154" cy="114" r="21" fill="url(#iris)"/></g>
+    <circle cx="102" cy="115" r="10" fill="#120a2e"/><circle cx="154" cy="115" r="10" fill="#120a2e"/>
+    <circle cx="107" cy="109" r="4.5" fill="#ffffff"/><circle cx="159" cy="109" r="4.5" fill="#ffffff"/>
+    <g fill="url(#ribbon)" stroke="#140a2c" stroke-width="1.5" stroke-linejoin="round">
+      <path d="M66 110 C52 112 42 122 38 138 L47 135 C50 124 58 118 68 117 Z"/>
+      <path d="M66 113 C56 121 51 135 53 152 L60 147 C60 135 63 125 70 119 Z"/>
+      <path d="M190 110 C204 112 214 122 218 138 L209 135 C206 124 198 118 188 117 Z"/>
+      <path d="M190 113 C200 121 205 135 203 152 L196 147 C196 135 193 125 186 119 Z"/>
+    </g>
+    <path fill-rule="evenodd" d="M62 112 C62 96 74 86 92 86 C106 86 118 92 128 98 C138 92 150 86 164 86 C182 86 194 96 194 112 C194 128 184 140 168 142 C156 144 142 138 134 130 Q128 124 122 130 C114 138 100 144 88 142 C72 140 62 128 62 112 Z M80 114 C86 102 118 102 124 114 C118 126 86 126 80 114 Z M132 114 C138 102 170 102 176 114 C170 126 138 126 132 114 Z" fill="url(#satin)" stroke="url(#gold)" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M74 100 C80 90 96 88 110 92 C118 94 124 98 128 102 C132 98 138 94 146 92 C160 88 176 90 182 100 C170 96 156 96 144 100 C138 102 132 106 128 110 C124 106 118 102 112 100 C100 96 86 96 74 100 Z" fill="url(#sheen)" opacity=".7"/>
+    <g fill="url(#gold)"><circle cx="70" cy="103" r="3"/><circle cx="186" cy="103" r="3"/><circle cx="128" cy="104" r="2.4"/></g>
+    <g fill="url(#ribbon)" stroke="url(#gold)" stroke-width="1.5"><ellipse cx="63" cy="113" rx="5" ry="7"/><ellipse cx="193" cy="113" rx="5" ry="7"/></g>
+    <path d="M128 124 C121 130 120 141 128 152 C136 141 135 130 128 124 Z" fill="url(#beak)"/>
+  </g>
+</svg>

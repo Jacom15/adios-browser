@@ -55,6 +55,7 @@ export MOZ_BUILD_DATE
 mkdir -p "$OBJ/dist/bin/distribution"
 cp browser/branding/adios/distribution.ini "$OBJ/dist/bin/distribution/"
 python3 browser/extensions/adios-vpn/install_wireproxy.py "$OBJ/dist/bin"
+python3 browser/extensions/adios-movil/install_movil.py "$OBJ/dist/bin"
 
 paso "Comprobando que el bloqueador funciona"
 python3 browser/extensions/ublock/verify_ublock.py

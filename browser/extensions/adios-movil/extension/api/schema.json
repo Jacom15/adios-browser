@@ -1,0 +1,21 @@
+[
+  {
+    "namespace": "adiosMovil",
+    "functions": [
+      {
+        "name": "start",
+        "type": "function",
+        "description": "Arranca el puente de Móvil si no está en marcha y devuelve su puerto y su secreto.",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "stop",
+        "type": "function",
+        "description": "Cierra el puente de Móvil.",
+        "async": true,
+        "parameters": []
+      }
+    ]
+  }
+]

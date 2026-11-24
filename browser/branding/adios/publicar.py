@@ -159,6 +159,9 @@ def main(argv):
         sys.exit("No se encuentra el instalador; ejecuta antes `mach package-multi-locale`.")
     if not (DIST / "firefox" / "distribution" / "wireproxy.exe").exists():
         sys.exit("Falta distribution/wireproxy.exe en el paquete.")
+    for helper in ("movil-puente.exe", "scrcpy/adb.exe", "scrcpy/scrcpy-server"):
+        if not (DIST / "firefox" / "distribution" / helper).exists():
+            sys.exit(f"Falta distribution/{helper} en el paquete.")
 
     out_dir = DIST / "adios-release"
     shutil.rmtree(out_dir, ignore_errors=True)

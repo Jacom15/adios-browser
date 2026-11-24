@@ -1,0 +1,37 @@
+{
+  "manifest_version": 2,
+  "name": "Móvil",
+  "description": "Ver y manejar tu Android desde el panel lateral de AdiOS.",
+  "version": "1.0.0",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "movil@adios.browser"
+    }
+  },
+  "icons": {
+    "48": "movil.svg",
+    "96": "movil.svg"
+  },
+  "sidebar_action": {
+    "default_title": "Móvil",
+    "default_panel": "panel.html",
+    "default_icon": "movil.svg",
+    "open_at_install": false
+  },
+  "experiment_apis": {
+    "adiosMovil": {
+      "schema": "api/schema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "script": "api/parent.js",
+        "paths": [
+          [
+            "adiosMovil"
+          ]
+        ]
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ DIRS += [
     "newtab",
     "ublock",
     "adios-vpn",
+    "adios-movil",
 ]
 
 JAR_MANIFESTS += ["jar.mn"]

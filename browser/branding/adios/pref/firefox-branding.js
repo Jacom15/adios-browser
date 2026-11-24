@@ -40,4 +40,5 @@ pref("browser.ipProtection.added", true);
 
 // AdiOS: only these sidebar tools stay in the launcher; the rest are collapsed
 // into its "more tools" menu. Empty restores the regular Firefox launcher.
-pref("adios.sidebar.visibleTools", "viewGenaiChatSidebar");
+// "movil_adios_browser-sidebar-action" is the built-in Móvil panel.
+pref("adios.sidebar.visibleTools", "viewGenaiChatSidebar,movil_adios_browser-sidebar-action");

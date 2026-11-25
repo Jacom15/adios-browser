@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<updates>
+  <update type="minor" displayVersion="161.0.1" appVersion="161.0.1"
+          platformVersion="161.0.1" buildID="20261125175833"
+          detailsURL="https://github.com/Jacom15/adios-browser/releases">
+    <patch type="complete" URL="https://github.com/Jacom15/adios-browser/releases/download/v161.0.1-20261125175833/AdiOS-161.0.1-20261125175833.complete.mar" hashFunction="sha512"
+           hashValue="ab58272cdd91802c6ab8447bf879cce6ea2958aef8118b9e02fa84285d6e9d60c4940a94aacdd5450ff34035381b728af049135958bf574f38934e1f34c6549e" size="114946973"/>
+  </update>
+</updates>

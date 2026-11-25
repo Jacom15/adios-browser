@@ -1,0 +1,250 @@
+<!doctype html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<!-- Página de descarga de AdiOS: publicar.py pone el botón, la versión y la dirección de la página. -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdiOS Browser</title>
+<meta name="description" content="Firefox sin anuncios y con VPN integrada. Se actualiza solo.">
+<meta name="theme-color" content="#0d1440">
+<meta property="og:title" content="AdiOS Browser">
+<meta property="og:description" content="Firefox sin anuncios y con VPN integrada. Se actualiza solo.">
+<meta property="og:image" content="https://jacom15.github.io/adios-browser/vista-previa.png">
+<meta property="og:url" content="https://jacom15.github.io/adios-browser/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="buho.png">
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #fbfbfe;
+    --soft: #d9d6ff;
+    --muted: #aaa6d9;
+    --card: rgba(255, 255, 255, .06);
+    --line: rgba(255, 255, 255, .13);
+    --accent: #8f7bff;
+    --ok: #2ac3a2;
+    --warn: #ffd27a;
+    --jacom: #5fe0cf;
+  }
+  * { box-sizing: border-box; }
+  html { background: #0d1440; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font: 16px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff9 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 84% 9%, #fff8 50%, transparent 51%),
+      radial-gradient(2px 2px at 92% 46%, #fff7 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 6% 62%, #fff6 50%, transparent 51%),
+      radial-gradient(circle at 18% 12%, rgba(91, 61, 255, .35), transparent 40%),
+      radial-gradient(circle at 88% 70%, rgba(58, 139, 255, .18), transparent 45%),
+      linear-gradient(160deg, #0d1440, #22125a 60%, #2c1563);
+    background-attachment: fixed;
+  }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif; letter-spacing: -.02em; margin: 0; }
+  p { margin: 0; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  :focus-visible { outline: 2px solid var(--jacom); outline-offset: 3px; border-radius: 6px; }
+
+  /* top bar */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px; }
+  .back { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--soft); font-weight: 600; font-size: 15px; padding: 6px 12px 6px 8px; border-radius: 10px; }
+  .back:hover { background: var(--card); color: var(--ink); }
+  .back .j { width: 26px; height: 26px; border-radius: 7px; background: var(--jacom); color: #0b1716; display: grid; place-items: center; font: 800 13px system-ui, sans-serif; }
+  .back .arrow { opacity: .8; }
+  .src { color: var(--muted); font-size: 14px; text-decoration: none; padding: 6px 10px; border-radius: 8px; }
+  .src:hover { color: var(--ink); background: var(--card); }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding-block: 36px 56px; }
+  .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .brand img { width: 72px; height: 72px; }
+  .brand span { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  h1 { font-size: clamp(40px, 6vw, 60px); line-height: 1.02; }
+  .tag { font-size: 20px; color: var(--soft); margin: 14px 0 28px; max-width: 30ch; }
+  .download { display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 600; font-size: 17px; text-decoration: none; box-shadow: 0 10px 30px rgba(91, 61, 255, .45); }
+  a.download:hover { background: #a191ff; }
+  .download svg { width: 20px; height: 20px; }
+  .download.soon { background: rgba(143, 123, 255, .35); box-shadow: none; cursor: default; }
+  .meta { margin-top: 12px; font-size: 14px; color: var(--muted); }
+
+  /* browser mock */
+  .mock { position: relative; border-radius: 16px; background: #1c1b22; border: 1px solid var(--line); box-shadow: 0 30px 70px rgba(5, 3, 30, .6); overflow: hidden; }
+  .mock .tabs { height: 40px; background: #0f0e14; display: flex; align-items: end; gap: 6px; padding: 0 10px; }
+  .mock .tab { height: 32px; padding: 0 14px; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 7px; font-size: 13px; color: #bfbfc9; }
+  .mock .tab.on { background: #2b2a33; color: var(--ink); }
+  .mock .tab img { width: 16px; height: 16px; }
+  .mock .bar { height: 44px; background: #2b2a33; display: flex; align-items: center; gap: 10px; padding: 0 12px; }
+  .mock .url { flex: 1; height: 30px; border-radius: 7px; background: #1c1b22; display: flex; align-items: center; padding: 0 12px; font-size: 13px; color: #cfcfd8; }
+  .mock .bar svg { width: 22px; height: 22px; flex: none; }
+  .mock .menu { width: 18px; display: grid; gap: 4px; flex: none; }
+  .mock .menu i { height: 2px; background: #cfcfd8; border-radius: 2px; }
+  .mock .page { padding: 16px; display: grid; gap: 10px; }
+  .mock .video { aspect-ratio: 16 / 8; border-radius: 10px; position: relative; display: grid; place-items: center; background: linear-gradient(135deg, #2f3590, #6a3fd6); }
+  .mock .play { width: 54px; height: 54px; border-radius: 50%; background: rgba(255, 255, 255, .92); display: grid; place-items: center; }
+  .mock .play::after { content: ""; margin-left: 5px; border-left: 18px solid #2c1563; border-top: 11px solid transparent; border-bottom: 11px solid transparent; }
+  .mock .badge { position: absolute; left: 12px; top: 12px; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; background: rgba(8, 10, 30, .78); font-size: 13px; font-weight: 600; }
+  .mock .badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+  .mock .line { height: 11px; border-radius: 6px; background: #2b2a33; }
+  .mock .popup { position: absolute; right: 14px; top: 78px; padding: 12px 14px; white-space: nowrap; border-radius: 12px; background: #2b2a33; border: 1px solid #3a3944; box-shadow: 0 16px 36px rgba(0, 0, 0, .45); display: flex; align-items: center; gap: 10px; }
+  .mock .popup svg { width: 30px; height: 30px; flex: none; }
+  .mock .popup b { display: block; font-size: 15px; }
+  .mock .popup small { color: var(--ok); font-size: 12.5px; }
+  .mock .switch { margin-left: 14px; width: 38px; height: 22px; border-radius: 11px; background: var(--ok); position: relative; flex: none; }
+  .mock .switch::after { content: ""; position: absolute; right: 3px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+
+  /* sections */
+  section { padding-block: 28px; }
+  h2 { font-size: 26px; margin-bottom: 18px; }
+  .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .feature { display: flex; gap: 14px; padding: 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
+  .feature .ico { width: 42px; height: 42px; border-radius: 11px; flex: none; display: grid; place-items: center; background: rgba(143, 123, 255, .18); color: #c9bfff; }
+  .feature .ico svg { width: 22px; height: 22px; }
+  .feature h3 { font-size: 17px; margin-bottom: 4px; }
+  .feature p { color: var(--soft); font-size: 15px; }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; counter-reset: step; list-style: none; margin: 0; padding: 0; }
+  .steps li { padding: 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
+  .steps li::before { counter-increment: step; content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); font-weight: 700; margin-bottom: 10px; }
+  .steps h3 { font-size: 17px; margin-bottom: 4px; }
+  .steps p { color: var(--soft); font-size: 15px; }
+  .steps .tip { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(255, 210, 122, .1); border: 1px solid rgba(255, 210, 122, .28); color: #f3e6c8; font-size: 14px; }
+  kbd { font: inherit; font-weight: 600; white-space: nowrap; }
+  .steps .tip a { color: inherit; }
+  .intro { color: var(--soft); max-width: 70ch; margin: -6px 0 18px; }
+  .smartscreen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .smartscreen figure { margin: 0; display: grid; gap: 10px; }
+  .smartscreen figcaption { color: var(--soft); font-size: 15px; }
+  .ss { position: relative; padding: 22px 22px 18px; border-radius: 10px; background: #1366b8; color: #fff; font-family: "Segoe UI", system-ui, sans-serif; box-shadow: 0 16px 40px rgba(0, 0, 0, .35); }
+  .ss-title { font-size: 25px; font-weight: 300; margin-bottom: 12px; }
+  .ss p { font-size: 13.5px; line-height: 1.45; margin-bottom: 12px; }
+  .ss-app { font-size: 13.5px; }
+  .ss-link { display: inline-block; font-size: 13.5px; text-decoration: underline; }
+  .ss-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .25); }
+  .ss-btn { padding: 6px 14px; border: 2px solid rgba(255, 255, 255, .85); font-size: 13.5px; white-space: nowrap; }
+  .mark { position: relative; outline: 3px solid var(--warn); outline-offset: 4px; border-radius: 3px; }
+  .mark::after { content: attr(data-n); position: absolute; top: -16px; right: -16px; width: 24px; height: 24px; border-radius: 50%; background: var(--warn); color: #2c1563; font: 800 13px system-ui, sans-serif; display: grid; place-items: center; }
+
+  footer { margin-top: 28px; padding-block: 26px 36px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+  footer a { color: var(--soft); }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; padding-block: 16px 36px; }
+    .features, .steps, .smartscreen { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .src { display: none; }
+    .download { width: 100%; justify-content: center; }
+    .mock .video { aspect-ratio: 16 / 10; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="shield" viewBox="0 0 16 16">
+    <path d="M8 .8 14 3v4.4c0 3.8-2.6 6.3-6 7.8C4.6 13.7 2 11.2 2 7.4V3Z" fill="#2ac3a2"/>
+    <rect x="5.5" y="7.3" width="5" height="3.9" rx=".8" fill="#fff"/>
+    <path d="M6.5 7.4V6.2a1.5 1.5 0 0 1 3 0v1.2" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<div class="wrap">
+  <nav class="top">
+    <a class="back" href="https://dashboard.jacom.dev/inicio/"><span class="arrow">←</span><span class="j">J</span>Herramientas de Jacom</a>
+    <a class="src" href="https://github.com/Jacom15/adios-browser">Código fuente</a>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <div>
+        <div class="brand"><img src="buho.png" alt=""><span>Navegador para Windows</span></div>
+        <h1>AdiOS Browser</h1>
+        <p class="tag">Firefox sin anuncios y con VPN integrada. Se actualiza solo.</p>
+        <a class="download" href="https://github.com/Jacom15/adios-browser/releases/download/v161.0.1-20261125175833/AdiOS-Setup.exe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>Descargar para Windows</a>
+        <p class="meta">Versión 161.0.1 · 105 MB · Windows 10 y 11 (64 bits)</p>
+      </div>
+      <div class="mock" aria-hidden="true">
+        <div class="tabs"><span class="tab on"><img src="buho.png" alt="">Vídeos</span><span class="tab">Noticias</span></div>
+        <div class="bar"><span class="url">videos.ejemplo.com</span><svg><use href="#shield"/></svg><span class="menu"><i></i><i></i><i></i></span></div>
+        <div class="page">
+          <div class="video"><span class="badge"><i></i>0 anuncios</span><span class="play"></span></div>
+          <div class="line" style="width: 78%"></div>
+          <div class="line" style="width: 52%"></div>
+          <div class="line" style="width: 64%"></div>
+        </div>
+        <div class="popup"><svg><use href="#shield"/></svg><div><b>VPN</b><small>Conectada · España</small></div><span class="switch"></span></div>
+      </div>
+    </div>
+
+    <section>
+      <h2>Qué trae</h2>
+      <div class="features">
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span>
+          <div><h3>Sin anuncios</h3><p>El bloqueador viene dentro del navegador: no hay extensiones que instalar ni configurar.</p></div>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.8-7 10-4-2.2-7-5.5-7-10V6z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg></span>
+          <div><h3>VPN a elegir</h3><p>La VPN gratuita de Firefox o la tuya: Proton VPN, NordVPN o cualquier WireGuard. Y puedes dejar webs fuera de la VPN.</p></div>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20v-4h-4"/></svg></span>
+          <div><h3>Se actualiza solo</h3><p>Cuando hay versión nueva aparece «Actualizar» en el menú ☰: un clic y listo.</p></div>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M10 4a2 2 0 1 1 4 0v2h4v4h-2a2 2 0 1 0 0 4h2v4h-4v-2a2 2 0 1 0-4 0v2H6v-4h2a2 2 0 1 0 0-4H6V6h4z"/></svg></span>
+          <div><h3>Es Firefox por dentro</h3><p>Las extensiones de Firefox funcionan igual, y con tu cuenta de Firefox te traes marcadores y contraseñas.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Instalarlo</h2>
+      <ol class="steps">
+        <li><h3>Descárgalo</h3><p>Pulsa «Descargar para Windows» y guarda AdiOS-Setup.exe.</p>
+          <p class="tip">Si el navegador dice que el archivo no se descarga habitualmente, elige <kbd>Conservar</kbd> o <kbd>Permitir descarga</kbd>.</p></li>
+        <li><h3>Ábrelo</h3><p>Haz doble clic en AdiOS-Setup.exe y sigue el instalador; tarda menos de un minuto.</p>
+          <p class="tip">Si sale un aviso azul de Windows, mira <a href="#aviso">aquí abajo</a> cómo seguir.</p></li>
+        <li><h3>Listo</h3><p>A partir de aquí se mantiene al día solo: no hace falta volver a esta página.</p></li>
+      </ol>
+    </section>
+
+    <section id="aviso">
+      <h2>Si Windows te avisa</h2>
+      <p class="intro">Es normal: AdiOS es nuevo y su instalador no está firmado por Microsoft, así que Windows no lo
+        reconoce todavía. Solo pasa al instalar; las actualizaciones no vuelven a avisar.</p>
+      <div class="smartscreen">
+        <figure>
+          <div class="ss" aria-hidden="true">
+            <div class="ss-title">Windows protegió su PC</div>
+            <p>Microsoft Defender SmartScreen impidió el inicio de una aplicación no reconocida. Ejecutar esta aplicación puede poner en riesgo su PC.</p>
+            <span class="ss-link mark" data-n="1">Más información</span>
+            <div class="ss-buttons"><span class="ss-btn">No ejecutar</span></div>
+          </div>
+          <figcaption><b>1.</b> Pulsa <kbd>Más información</kbd>.</figcaption>
+        </figure>
+        <figure>
+          <div class="ss" aria-hidden="true">
+            <div class="ss-title">Windows protegió su PC</div>
+            <p>Microsoft Defender SmartScreen impidió el inicio de una aplicación no reconocida. Ejecutar esta aplicación puede poner en riesgo su PC.</p>
+            <p class="ss-app">Aplicación: AdiOS-Setup.exe<br>Editor: Editor desconocido</p>
+            <div class="ss-buttons"><span class="ss-btn mark" data-n="2">Ejecutar de todas formas</span><span class="ss-btn">No ejecutar</span></div>
+          </div>
+          <figcaption><b>2.</b> Comprueba que pone <b>AdiOS-Setup.exe</b> y pulsa <kbd>Ejecutar de todas formas</kbd>.</figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="back" href="https://dashboard.jacom.dev/inicio/"><span class="arrow">←</span><span class="j">J</span>Volver a Herramientas de Jacom</a>
+    <span>Basado en Mozilla Firefox; no es un producto de Mozilla · <a href="https://github.com/Jacom15/adios-browser">Código fuente</a> (MPL 2.0; uBlock Origin, GPLv3)</span>
+  </footer>
+</div>
+</body>
+</html>

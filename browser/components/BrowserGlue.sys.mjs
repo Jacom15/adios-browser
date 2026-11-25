@@ -9,6 +9,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   AboutHomeStartupCache: "resource:///modules/AboutHomeStartupCache.sys.mjs",
+  AdiosMedia: "resource:///modules/AdiosMedia.sys.mjs",
   AWToolbarButton: "resource:///modules/aboutwelcome/AWToolbarUtils.sys.mjs",
   ASRouter: "resource:///modules/asrouter/ASRouter.sys.mjs",
   ASRouterDefaultConfig:
@@ -709,6 +710,9 @@ BrowserGlue.prototype = {
 
   // the first browser window has finished initializing
   _onFirstWindowLoaded: function BG__onFirstWindowLoaded(aWindow) {
+    // AdiOS: tell Ecosistema which tabs are playing media.
+    lazy.AdiosMedia.init();
+
     // A channel for "remote troubleshooting" code...
     let channel = new lazy.WebChannel(
       "remote-troubleshooting",

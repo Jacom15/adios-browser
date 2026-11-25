@@ -8,6 +8,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  AdiosMedia: "resource:///modules/AdiosMedia.sys.mjs",
   AIWindow:
     "moz-src:///browser/components/aiwindow/ui/modules/AIWindow.sys.mjs",
   AsyncShutdown: "resource://gre/modules/AsyncShutdown.sys.mjs",
@@ -492,6 +493,15 @@ nsBrowserContentHandler.prototype = {
 
   /* nsICommandLineHandler */
   handle: function bch_handle(cmdLine) {
+    // AdiOS: an order from Ecosistema for a tab playing media. It only makes
+    // sense for a running AdiOS; on a fresh start AdiOS just opens as usual.
+    let adiosMedia = cmdLine.handleFlagWithParam("adios-media", false);
+    if (adiosMedia && cmdLine.state != Ci.nsICommandLine.STATE_INITIAL_LAUNCH) {
+      lazy.AdiosMedia.handleCommand(adiosMedia);
+      cmdLine.preventDefault = true;
+      return;
+    }
+
     if (
       cmdLine.handleFlag("kiosk", false) ||
       cmdLine.handleFlagWithParam("kiosk-monitor", false)

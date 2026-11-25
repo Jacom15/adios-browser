@@ -47,3 +47,7 @@ pref("adios.sidebar.visibleTools", "viewGenaiChatSidebar,movil_adios_browser-sid
 pref("sidebar.visibility", "expand-on-hover");
 // AdiOS: unloaded (sleeping) tabs are shown greyed out.
 pref("browser.tabs.fadeOutUnloadedTabs", true);
+
+// AdiOS: use the Windows language everywhere, also in the profile selector,
+// which opens before any profile (and its distribution.ini prefs) is loaded.
+pref("intl.locale.requested", "");

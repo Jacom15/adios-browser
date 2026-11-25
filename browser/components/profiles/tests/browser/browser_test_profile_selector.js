@@ -86,11 +86,11 @@ add_task(async function test_selector_window() {
   const profileSelector = dialog.document.querySelector("profile-selector");
   await profileSelector.updateComplete;
 
-  Assert.ok(profileSelector.checkbox.checked, "Checkbox should be checked");
+  Assert.ok(profileSelector.toggle.pressed, "Ask toggle should be on");
 
   Assert.ok(
-    profileSelector.checkbox.querySelector('[slot="description"]').hidden,
-    "Description slot should be hidden when checkbox is checked"
+    !profileSelector.renderRoot.querySelector(".always"),
+    "The always-open picker should be hidden while asking"
   );
 
   await Services.fog.testFlushAllChildren();
@@ -111,21 +111,19 @@ add_task(async function test_selector_window() {
       return Promise.resolve();
     });
 
-  profileSelector.checkbox.click();
+  profileSelector.toggle.buttonEl.click();
   await flushResolvers.promise;
+  await profileSelector.updateComplete;
 
-  Assert.ok(
-    !profileSelector.checkbox.checked,
-    "Checkbox should not be checked"
-  );
+  Assert.ok(!profileSelector.toggle.pressed, "Ask toggle should be off");
   Assert.ok(
     !gProfileService.currentProfile.showProfileSelector,
     "Profile selector should be disabled"
   );
 
   Assert.ok(
-    profileSelector.checkbox.querySelector('[slot="description"]'),
-    "Description slot should exist when checkbox is unchecked"
+    profileSelector.renderRoot.querySelector(".always select"),
+    "The always-open picker should show when not asking"
   );
 
   await assertGlean(
@@ -140,19 +138,20 @@ add_task(async function test_selector_window() {
 
   flushResolvers = Promise.withResolvers();
 
-  profileSelector.checkbox.click();
+  profileSelector.toggle.buttonEl.click();
   await flushResolvers.promise;
   asyncFlushCurrentProfile.restore();
+  await profileSelector.updateComplete;
 
-  Assert.ok(profileSelector.checkbox.checked, "Checkbox should not be checked");
+  Assert.ok(profileSelector.toggle.pressed, "Ask toggle should be on again");
   Assert.ok(
     gProfileService.currentProfile.showProfileSelector,
-    "Profile selector should be disabled"
+    "Profile selector should be enabled"
   );
 
   Assert.ok(
-    profileSelector.checkbox.querySelector('[slot="description"]').hidden,
-    "Description slot should be hidden when checkbox is checked again"
+    !profileSelector.renderRoot.querySelector(".always"),
+    "The always-open picker should be hidden when asking again"
   );
 
   const profiles = profileSelector.profileCards;
@@ -299,6 +298,42 @@ add_task(async function test_selector_window_launch_profile_with_keyboard() {
   }
 });
 
+add_task(async function test_selector_window_number_shortcut() {
+  await initGroupDatabase();
+  let profile = SelectableProfileService.currentProfile;
+
+  let windowOpened = BrowserTestUtils.domWindowOpenedAndLoaded();
+  await gProfiles.manageProfiles();
+  let dialog = await windowOpened;
+  await promiseFocus(dialog);
+
+  let closed = BrowserTestUtils.domWindowClosed(dialog);
+  const profileSelector = dialog.document.querySelector("profile-selector");
+  await profileSelector.updateComplete;
+
+  Assert.ok(
+    profileSelector.renderRoot.querySelector(".hint"),
+    "The keyboard hint is shown"
+  );
+
+  sendCommandLine.resetHistory();
+  dialog.document.body.focus();
+  EventUtils.synthesizeKey("1", {}, dialog);
+
+  Assert.equal(
+    sendCommandLine.callCount,
+    1,
+    "Pressing 1 should open the first profile"
+  );
+  Assert.deepEqual(
+    sendCommandLine.firstCall.args,
+    [profile.path, ["--profiles-activate"], true],
+    "Expected sendCommandLine arguments"
+  );
+
+  await closed;
+});
+
 add_task(
   async function test_selector_window_launch_edit_profile_with_keyboard() {
     await initGroupDatabase();
@@ -357,7 +392,11 @@ add_task(
 
       sendCommandLine.resetHistory();
 
-      let editButton = profileSelector.profileCards[0].editButton;
+      // Edit and delete live in the card's «⋯» menu.
+      let card = profileSelector.profileCards[0];
+      card.moreButton.click();
+      await card.updateComplete;
+      let editButton = card.editButton;
       // Focus the profile card edit button
       editButton.focus({ focusVisible: true });
       await TestUtils.waitForCondition(
@@ -448,7 +487,10 @@ add_task(
 
       sendCommandLine.resetHistory();
 
-      let deleteButton = profileSelector.profileCards[0].deleteButton;
+      let card = profileSelector.profileCards[0];
+      card.moreButton.click();
+      await card.updateComplete;
+      let deleteButton = card.deleteButton;
       // Focus the profile card delete button
       deleteButton.focus({ focusVisible: true });
       await TestUtils.waitForCondition(

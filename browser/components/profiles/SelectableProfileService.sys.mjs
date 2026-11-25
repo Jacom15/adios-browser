@@ -1445,6 +1445,14 @@ class SelectableProfileServiceClass extends EventEmitter {
    * set as the default.
    */
   async setDefaultProfileForGroup(aProfile = this.currentProfile) {
+    // AdiOS: if the user chose «Always open with» a profile, that one stays the default.
+    let startupId = await this.getStartupProfileId();
+    if (startupId) {
+      let pinned = await this.getProfile(startupId);
+      if (pinned) {
+        aProfile = pinned;
+      }
+    }
     if (!aProfile) {
       return;
     }
@@ -1463,6 +1471,36 @@ class SelectableProfileServiceClass extends EventEmitter {
     this.groupToolkitProfile.rootDir = newRootDir;
     Glean.profilesDefault.updated.record();
     await this.#attemptFlushProfileService();
+  }
+
+  /**
+   * AdiOS: the profile chosen in the selector's «Always open with», or 0 when
+   * AdiOS opens the last profile used.
+   *
+   * @returns {Promise<number>}
+   */
+  async getStartupProfileId() {
+    if (!this.#connection) {
+      return 0;
+    }
+    try {
+      return Number(await this.getDBPref("adios.profiles.startupProfile")) || 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  /**
+   * AdiOS: always open this profile when the selector is not shown (null: the
+   * last one used).
+   *
+   * @param {SelectableProfile|null} aProfile
+   */
+  async setStartupProfile(aProfile) {
+    await this.#setDBPref("adios.profiles.startupProfile", aProfile?.id ?? 0);
+    if (aProfile) {
+      await this.setDefaultProfileForGroup(aProfile);
+    }
   }
 
   /**

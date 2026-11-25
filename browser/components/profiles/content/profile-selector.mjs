@@ -8,7 +8,8 @@ import { html } from "chrome://global/content/vendor/lit.all.mjs";
 // eslint-disable-next-line import-x/no-unassigned-import
 import "chrome://browser/content/profiles/profile-card.mjs";
 // eslint-disable-next-line import-x/no-unassigned-import
-import "chrome://global/content/elements/moz-checkbox.mjs";
+import "chrome://global/content/elements/moz-toggle.mjs";
+import { text } from "chrome://browser/content/profiles/profile-selector-strings.mjs";
 
 const { SelectableProfileService } = ChromeUtils.importESModule(
   "resource:///modules/profiles/SelectableProfileService.sys.mjs"
@@ -21,10 +22,11 @@ export class ProfileSelector extends MozLitElement {
   static properties = {
     profiles: { type: Array },
     showSelector: { type: Boolean },
+    startupProfileId: { type: Number },
   };
 
   static queries = {
-    checkbox: "moz-checkbox",
+    toggle: "moz-toggle",
     profileCards: { all: "profile-card" },
     createProfileCard: "new-profile-card",
   };
@@ -88,12 +90,30 @@ export class ProfileSelector extends MozLitElement {
     document.addEventListener("LaunchProfile", this);
     document.addEventListener("CreateProfile", this);
     document.addEventListener("DeleteProfile", this);
+    document.addEventListener("keydown", this);
+    document.title = text("title");
 
     this.selectableProfileService = SelectableProfileService;
 
     await this.selectableProfileService.init();
     await this.selectableProfileService.maybeSetupDataStore();
-    this.profiles = await this.selectableProfileService.getAllProfiles();
+    let profiles = await this.selectableProfileService.getAllProfiles();
+    // When each profile was last used: prefs.js is saved while it runs and when it closes.
+    this.lastUsed = new Map();
+    await Promise.all(
+      profiles.map(async profile => {
+        try {
+          let dir = await profile.rootDir;
+          let info = await IOUtils.stat(PathUtils.join(dir.path, "prefs.js"));
+          this.lastUsed.set(profile.id, info.lastModified);
+        } catch (e) {
+          // A profile that was never opened has no prefs.js yet.
+        }
+      })
+    );
+    this.startupProfileId =
+      await this.selectableProfileService.getStartupProfileId();
+    this.profiles = profiles;
     this.showSelector =
       this.selectableProfileService.groupToolkitProfile.showProfileSelector;
 
@@ -112,8 +132,58 @@ export class ProfileSelector extends MozLitElement {
     }
   }
 
+  /** The profile used most recently, which Enter opens. */
+  get lastUsedProfile() {
+    let best = null;
+    for (let profile of this.profiles ?? []) {
+      if (
+        !best ||
+        (this.lastUsed.get(profile.id) ?? 0) > (this.lastUsed.get(best.id) ?? 0)
+      ) {
+        best = profile;
+      }
+    }
+    return best;
+  }
+
+  async handleAlwaysChange(event) {
+    let id = Number(event.target.value);
+    this.startupProfileId = id;
+    await this.selectableProfileService.setStartupProfile(
+      this.profiles.find(p => p.id === id) ?? null
+    );
+  }
+
+  /** 1 to 9 open that profile; Enter opens the last one used. */
+  handleKeyDown(event) {
+    if (
+      event.defaultPrevented ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey
+    ) {
+      return;
+    }
+    let target = event.composedPath()[0] ?? event.target;
+    if (target.closest?.("select, input, button, moz-toggle")) {
+      return;
+    }
+    let number = parseInt(event.key, 10);
+    let profile = null;
+    if (number >= 1 && number <= Math.min(9, this.profiles?.length ?? 0)) {
+      profile = this.profiles[number - 1];
+    } else if (event.key === "Enter") {
+      profile = this.lastUsedProfile;
+    }
+    if (profile) {
+      event.preventDefault();
+      Glean.profilesSelectorWindow.launch.record();
+      this.launchProfile(profile);
+    }
+  }
+
   handleCheckboxToggle() {
-    this.showSelector = this.checkbox.checked;
+    this.showSelector = this.toggle.pressed;
     let state = this.showSelector ? "enabled" : "disabled";
     Glean.profilesSelectorWindow.showAtStartup.record({ value: state });
     this.selectableProfileService.setShowProfileSelectorWindow(
@@ -134,6 +204,10 @@ export class ProfileSelector extends MozLitElement {
 
   async handleEvent(event) {
     switch (event.type) {
+      case "keydown": {
+        this.handleKeyDown(event);
+        break;
+      }
       case "LaunchProfile": {
         Glean.profilesSelectorWindow.launch.record();
         let { profile, url } = event.detail;
@@ -161,6 +235,9 @@ export class ProfileSelector extends MozLitElement {
     if (!this.profiles) {
       return null;
     }
+    let currentId = this.isStartupUI
+      ? null
+      : this.selectableProfileService.currentProfile?.id;
 
     return html`<link
         rel="stylesheet"
@@ -170,31 +247,57 @@ export class ProfileSelector extends MozLitElement {
         rel="stylesheet"
         href="chrome://global/skin/in-content/common.css"
       />
-      <img
-        class="logo"
-        data-l10n-id="profile-window-logo"
-        data-l10n-attrs="alt"
-        src="chrome://branding/content/about-logo.svg"
-      />
-      <h1 data-l10n-id="profile-window-heading"></h1>
-      <p class="profiles-body-text" data-l10n-id="profile-window-body"></p>
+      <header class="heading">
+        <img
+          class="logo"
+          alt=""
+          src="chrome://branding/content/about-logo.svg"
+        />
+        <div>
+          <h1>${text("heading")}</h1>
+          <p class="profiles-body-text">${text("body")}</p>
+        </div>
+      </header>
       <div class="profile-list">
         ${this.profiles.map(
-          p => html`<profile-card .profile=${p}></profile-card>`
+          (p, i) =>
+            html`<profile-card
+              .profile=${p}
+              .index=${i}
+              .lastUsed=${this.lastUsed.get(p.id) ?? 0}
+              .isLast=${p.id === this.lastUsedProfile?.id}
+              .isCurrent=${p.id === currentId}
+            ></profile-card>`
         )}
         <new-profile-card></new-profile-card>
       </div>
-      <moz-checkbox
-        @click=${this.handleCheckboxToggle}
-        data-l10n-id="profile-window-checkbox-label-2"
-        ?checked=${this.showSelector}
-      >
-        <span
-          slot="description"
-          data-l10n-id="profile-window-checkbox-subcopy"
-          ?hidden=${this.showSelector}
-        ></span>
-      </moz-checkbox>`;
+      <p class="hint">${text("hint", this.profiles.length)}</p>
+      <footer class="footer">
+        <moz-toggle
+          .pressed=${this.showSelector}
+          label=${text("ask")}
+          @toggle=${this.handleCheckboxToggle}
+        ></moz-toggle>
+        ${this.showSelector
+          ? ""
+          : html`<label class="always"
+              >${text("always")}
+              <select @change=${this.handleAlwaysChange}>
+                <option value="0" ?selected=${!this.startupProfileId}>
+                  ${text("lastOption")}
+                </option>
+                ${this.profiles.map(
+                  p =>
+                    html`<option
+                      value=${p.id}
+                      ?selected=${p.id === this.startupProfileId}
+                    >
+                      ${p.name}
+                    </option>`
+                )}
+              </select></label
+            >`}
+      </footer>`;
   }
 }
 

@@ -33,7 +33,8 @@ export const AdiosMedia = {
   _pending: null,
   _poll: null,
   _lastJSON: "",
-  // browserId -> when it was last heard playing, to sort the list.
+  // browserId -> { playing, at }: when it last started or stopped playing, to
+  // sort the list without rewriting the file while it keeps playing.
   _lastPlayed: new Map(),
 
   init() {
@@ -139,8 +140,13 @@ export const AdiosMedia = {
     }
     let id = String(browser.browserId);
     let playing = active ? controller.isPlaying : tab.soundPlaying;
-    if (playing) {
-      this._lastPlayed.set(id, Date.now());
+    let last = this._lastPlayed.get(id);
+    if (!last) {
+      last = { playing, at: playing ? Date.now() : 0 };
+      this._lastPlayed.set(id, last);
+    } else if (last.playing != playing) {
+      last.playing = playing;
+      last.at = Date.now();
     }
     let artwork = "";
     let bestSize = -1;
@@ -163,7 +169,7 @@ export const AdiosMedia = {
       canControl: active,
       artwork,
       icon: tab.image?.startsWith("http") ? tab.image : "",
-      lastPlayed: this._lastPlayed.get(id) ?? 0,
+      lastPlayed: last.at,
     };
   },
 
